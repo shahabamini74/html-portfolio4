@@ -47,41 +47,45 @@ After the registration and login, users are redirected to the homepage. From her
 
 
 #### Bounded Contexts
->**Accounts:** registration, authentication, and profile management.
-**Catalog:** book metadata from Google Books / Goodreads APIs.
-**Reading Lists:** personal shelves with status and progress tracking.
-**Preferences:** user-selected genres, languages, and reading goals.
-**Recommendations:** AI-driven su
+1.  Accounts: registration, authentication, and profile management.
+2.  Catalog:** book metadata from Google Books / Goodreads APIs.
+3.  Reading Lists:** personal shelves with status and progress tracking.
+4.  Preferences:** user-selected genres, languages, and reading goals.
+5.  Recommendations:** AI-driven su
 
 ### Domain Concepts
->**1. Entities / Aggregates:**
- •  User (Accounts) → id, email, username, passwordHash.
- •	Book (Catalog) → id, title, authors, genre, cover, summary.
- •	ReadingList (Reading Lists) → id, userId, items (status, progress, timestamps).
- •	UserPreferences (Preferences) → genres, language, goals, notifications.
- •	RecommendationSession (Recommendations) → inputs (prefs + history), candidates, ranked results.
-**2. Value Objects:** ReadingStatus (Want, Reading, Finished), Progress value, Genre, Language.
+**Entities / Aggregates:**
+ 1.  User (Accounts) → id, email, username, passwordHash.
+ 2.  Book (Catalog) → id, title, authors, genre, cover, summary.
+ 3.  ReadingList (Reading Lists) → id, userId, items (status, progress, timestamps).
+ 4.  UserPreferences (Preferences) → genres, language, goals, notifications.
+ 5.  RecommendationSession (Recommendations) → inputs (prefs + history), candidates, ranked results.
+ 
+**Value Objects:** ReadingStatus (Want, Reading, Finished), Progress value, Genre, Language.
 
 ### Repositories / Services / Factories
->**Repositories:** UserRepository, BookRepository, ReadingListRepository, UserPreferencesRepository.
-**Services:** SearchService (Catalog), RecommendationService (Recommendations), ProfileService (Preferences).
-**Factories:** BookFactory (creates Book aggregates from external API data)
+ 1. Repositories:UserRepository, BookRepository, ReadingListRepository, UserPreferencesRepository.
+ 2. Services: SearchService (Catalog), RecommendationService (Recommendations), ProfileService (Preferences).
+3. Factories: BookFactory (creates Book aggregates from external API data)
 
 
 ### Relevant Domain Events
-**Accounts:** UserRegistered, UserLoggedIn.
-**Catalog:** BookImported, BookEnriched.
-**Reading Lists:** BookAddedToReadingList, ReadingProgressUpdated, ReadingStatusChanged.
-**Preferences:** UserPreferencesUpdated.
-**Recommendations:** RecommendationsGenerated, RecommendationClicked.
+1. Accounts: UserRegistered, UserLoggedIn.
+2. Catalog: BookImported, BookEnriched.
+3. Reading Lists: BookAddedToReadingList, ReadingProgressUpdated, ReadingStatusChanged.
+4. Preferences: UserPreferencesUpdated.
+5. Recommendations: RecommendationsGenerated, RecommendationClicked.
 
 
 # Data-related aspects
 #### There are some data need to be store such as:  
->**•	  user :**(id, email, username, password_hash, privacy), 
-**•	user preferences :** (genres, language, goals, notifications), 
-**• books:** (external_id/ISBN, title, authors, cover, year, language, summary),
-**•	reading list entries :** (user_id, book_id, status, progress, timestamps). 
+1. user:(id, email, username, password_hash, privacy), 
+2. 	user preferences : (genres, language, goals, notifications), 
+3.  books: (external_id/ISBN, title, authors, cover, year, language, summary),
+4. reading list entries : (user_id, book_id, status, progress, timestamps).
+
+
+
 ##### Keep them in a SQL database (SQLite for dev, PostgreSQL for prod). Cache optional short-lived recommendation results in memory or Redis.
 
 >**Use relational storage to store persistent data**
@@ -89,11 +93,11 @@ Reason: strong relations (user ↔ preferences, user ↔ reading_list ↔ book),
 
 
 #### Querying components:
->**•	Auth/Accounts on register/login:** SELECT user by email, INSERT user.
-**•	Profile/Preferences on dashboard load/update:** SELECT/UPDATE preferences by user_id.
-**•	Catalog/Books on first view/import:** UPSERT book by external_id/ISBN; SELECT details for pages.
-**•	ReadingList on add/status/progress:** INSERT reading_list_item, UPDATE progress/status; SELECT list (JOIN books) for “My Library.”
-**•	RecommendationService when generating results:** SELECT preferences and reading history; optional INSERT of a transient recommendation session.
+1.	Auth/Accounts on register/login:** SELECT user by email, INSERT user.
+2. Profile/Preferences on dashboard load/update:** SELECT/UPDATE preferences by user_id.
+3. Catalog/Books on first view/import:** UPSERT book by external_id/ISBN; SELECT details for pages.
+4.	ReadingList on add/status/progress:** INSERT reading_list_item, UPDATE progress/status; SELECT list (JOIN books) for “My Library.”
+5. RecommendationService when generating results:** SELECT preferences and reading history; optional INSERT of a transient recommendation session.
 
 
 
